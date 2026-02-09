@@ -8,7 +8,9 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/pranalyadav/mongoapi/model"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/x/mongo/driver/mongocrypt/options"
 )
 
@@ -51,4 +53,19 @@ func insertOneMovie(movie model.Netflix) {
 		log.Fatal(err)
 	}
 	fmt.Println("Inserted 1 movie with in DB with id: ",inserted.InsertedID)
+}
+
+// update one record
+
+func updateOneMovie(movieId string) {
+	id, _ := primitive.ObjectIDFromHex(movieId)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"watched": true}}
+
+	result, err := collection.UpdateOne(context.Background(),filter, update)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("modified count: ",result.ModifiedCount)
 }
