@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/pranalyadav/mongoapi/model"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/v2/x/mongo/driver/mongocrypt/options"
 )
@@ -37,4 +38,17 @@ func init() {
 
 	//collection instance 
 	fmt.Println("Collection instance is ready")
+}
+
+// MONGODB helpers - file
+
+// insert one record
+
+func insertOneMovie(movie model.Netflix) {
+	inserted, err := collection.InsertOne(context.Background(), movie)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Inserted 1 movie with in DB with id: ",inserted.InsertedID)
 }

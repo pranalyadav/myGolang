@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-
 )
 
 func main() {
 	
-	fmt.Println("mongo db connection in golang")
+	fmt.Println("mongo db API connection in golang")
 }
+
