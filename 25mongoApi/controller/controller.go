@@ -2,8 +2,10 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -92,4 +94,34 @@ func deleteAllMovies() int64 {
 	}
 	fmt.Println("Number of movies deleted:", deleteResult.DeletedCount)
 	return deleteResult.DeletedCount
+}
+
+//get all movies from database
+
+func getAllMovies() []primitive.M{
+	curr, err := collection.Find(context.Background(), bson.D{{}})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var movies []primitive.M
+
+	for cur.Next(context.Background()) {
+		var movie bson.M
+		err := cur.Decode(&movie)
+		if err != nil {
+			log.Fatal(err)
+		}
+		movies = append(movies, movie)
+	}
+	defer cur.Close(context.Background())
+	return movies
+}
+
+// actual controller - file
+
+func GetMyAllMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	allMovies = getAllMovies()
+	json.NewEncoder(w).Encode(allMovies)
 }
