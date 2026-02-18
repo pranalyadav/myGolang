@@ -6,18 +6,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"github.com/pranalyadav/mongoapi/model"
+
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/x/mongo/driver/mongocrypt/options"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var connectionString = os.Getenv("DB_CONNECTION")
+var connectionString = "mongodb+srv://yadavpranal5_db_user:BUoEbpTwenOCY1wy@cluster0.ys6n0kn.mongodb.net/"
 const dbName = "netflix"
 const colName = "watchlist"
 
@@ -26,7 +25,10 @@ var collection *mongo.Collection
 
 // connect with mongoDB
 func init() {
-	godotenv.Load()
+// if err := godotenv.Load(); err != nil {
+// 	fmt.Println(".env not found — using system env")
+// }
+	// connectionString := os.Getenv("DB_CONNECTION")
 	//client option
 	clientOption := options.Client().ApplyURI(connectionString)
 
@@ -76,7 +78,7 @@ func updateOneMovie(movieId string) {
 //delete one record
 func deleteOneMovie(movieId string) {
 	id, _ := primitive.ObjectIDFromHex(movieId)
-	filter := bson.M("_id": id)
+	filter := bson.M{"_id": id}
 	deleteCount, err := collection.DeleteOne(context.Background(), filter)
 
 	if err != nil {
@@ -100,7 +102,7 @@ func deleteAllMovies() int64 {
 //get all movies from database
 
 func getAllMovies() []primitive.M{
-	curr, err := collection.Find(context.Background(), bson.D{{}})
+	cur, err := collection.Find(context.Background(), bson.D{{}})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -122,8 +124,8 @@ func getAllMovies() []primitive.M{
 // actual controller - file
 
 func GetMyAllMovies(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	allMovies = getAllMovies()
+	w.Header().Set("Content-Type", "application/x-www-form-urlencode")
+	allMovies := getAllMovies()
 	json.NewEncoder(w).Encode(allMovies)
 }
 
